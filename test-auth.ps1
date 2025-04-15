@@ -1,5 +1,5 @@
 # Configuration
-$baseUrl = "https://web-production-319e7.up.railway.app"
+$baseUrl = "http://localhost:3001"
 $headers = @{
     "Content-Type" = "application/json"
 }
@@ -29,7 +29,8 @@ function Invoke-APIRequest {
             -Method $Method `
             -Headers $headers `
             -Body ($Body | ConvertTo-Json) `
-            -ContentType "application/json"
+            -ContentType "application/json" `
+            -TimeoutSec 30
 
         Write-Host "Success Response:"
         Write-Host ($response | ConvertTo-Json -Depth 10)
@@ -57,46 +58,26 @@ function Invoke-APIRequest {
 }
 
 # Test registration
-$registrationBody = @{
+$registerBody = @{
     name = "Test User"
     email = "test@example.com"
     password = "password123"
 }
 
-$registrationResponse = Invoke-APIRequest `
-    -Method "POST" `
-    -Endpoint "/api/auth/register" `
-    -Body $registrationBody `
-    -Description "Testing user registration"
+$registerResponse = Invoke-APIRequest -Method "POST" -Endpoint "/api/auth/register" -Body $registerBody -Description "Testing registration"
 
 # Test login with correct credentials
-if ($registrationResponse) {
-    $loginBody = @{
-        email = "test@example.com"
-        password = "password123"
-    }
-
-    $loginResponse = Invoke-APIRequest `
-        -Method "POST" `
-        -Endpoint "/api/auth/login" `
-        -Body $loginBody `
-        -Description "Testing user login with correct credentials"
-
-    # Store the token if login was successful
-    if ($loginResponse -and $loginResponse.token) {
-        $headers["Authorization"] = "Bearer $($loginResponse.token)"
-        Write-Host "`nAuthentication token received and stored in headers"
-    }
+$loginBody = @{
+    email = "test@example.com"
+    password = "password123"
 }
 
+$loginResponse = Invoke-APIRequest -Method "POST" -Endpoint "/api/auth/login" -Body $loginBody -Description "Testing login with correct credentials"
+
 # Test login with incorrect password
-$invalidLoginBody = @{
+$wrongLoginBody = @{
     email = "test@example.com"
     password = "wrongpassword"
 }
 
-Invoke-APIRequest `
-    -Method "POST" `
-    -Endpoint "/api/auth/login" `
-    -Body $invalidLoginBody `
-    -Description "Testing login with incorrect password" 
+$wrongLoginResponse = Invoke-APIRequest -Method "POST" -Endpoint "/api/auth/login" -Body $wrongLoginBody -Description "Testing login with incorrect password" 

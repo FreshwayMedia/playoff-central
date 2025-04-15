@@ -6,15 +6,11 @@ async function testConnection() {
     console.log('Attempting to connect to MongoDB...');
     console.log('Connection string:', process.env.MONGODB_URI);
     
-    mongoose.set('debug', true); // Enable debug logging
-    
     await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
+      serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
-      ssl: true,
-      authSource: 'admin',
     });
     
     console.log('Successfully connected to MongoDB!');
@@ -30,17 +26,8 @@ async function testConnection() {
     
   } catch (error) {
     console.error('MongoDB Connection Error:', error);
-    if (error.name === 'MongoServerError') {
-      console.error('Authentication failed. Please check username and password.');
-    }
-    if (error.name === 'MongoNetworkError') {
-      console.error('Network error. Please check your connection and MongoDB URI.');
-    }
   } finally {
-    if (mongoose.connection.readyState === 1) {
-      await mongoose.disconnect();
-      console.log('Disconnected from MongoDB');
-    }
+    await mongoose.disconnect();
     process.exit();
   }
 }
