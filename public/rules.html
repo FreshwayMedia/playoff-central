@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rules | NHL Playoff Pool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a237e;
+            --secondary-color: #0d47a1;
+            --accent-color: #2196f3;
+            --text-color: #333;
+            --light-text: #666;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .rules-container {
+            background-color: var(--card-background);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            margin: 1.5rem 0 1rem;
+        }
+
+        p {
+            color: var(--light-text);
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            list-style-position: inside;
+            margin-bottom: 1rem;
+            padding-left: 1rem;
+        }
+
+        li {
+            color: var(--light-text);
+            margin-bottom: 0.5rem;
+        }
+
+        .scoring-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .scoring-table th,
+        .scoring-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .scoring-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .scoring-table tr:nth-child(even) {
+            background-color: #f5f5f5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--card-background);
+            color: var(--light-text);
+            margin-top: auto;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .scoring-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">NHL Playoff Pool</div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/rules">Rules</a>
+                <a href="/standings">Standings</a>
+                <a href="/login">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="rules-container">
+            <h1>Pool Rules</h1>
+            
+            <h2>Entry Requirements</h2>
+            <ul>
+                <li>Entry fee: $20 per team</li>
+                <li>Maximum of 2 teams per person</li>
+                <li>All entries must be submitted before the start of the first playoff game</li>
+            </ul>
+
+            <h2>Team Selection</h2>
+            <p>Each participant must select:</p>
+            <ul>
+                <li>12 Forwards</li>
+                <li>6 Defensemen</li>
+                <li>2 Goalies</li>
+            </ul>
+            <p>No more than 3 players from any single NHL team are allowed.</p>
+
+            <h2>Scoring System</h2>
+            <table class="scoring-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Goals</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>Assists</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>Game-Winning Goals</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>Goalie Wins</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>Goalie Shutouts</td>
+                        <td>3</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Playoff Bonuses</h2>
+            <ul>
+                <li>Conference Final Appearance: 5 points per player</li>
+                <li>Stanley Cup Final Appearance: 10 points per player</li>
+                <li>Stanley Cup Win: 15 points per player</li>
+            </ul>
+
+            <h2>Prize Distribution</h2>
+            <ul>
+                <li>1st Place: 50% of the pot</li>
+                <li>2nd Place: 30% of the pot</li>
+                <li>3rd Place: 20% of the pot</li>
+            </ul>
+
+            <h2>Tiebreakers</h2>
+            <p>In the event of a tie, the following criteria will be used in order:</p>
+            <ol>
+                <li>Most goals scored</li>
+                <li>Most assists</li>
+                <li>Most game-winning goals</li>
+                <li>Most goalie wins</li>
+                <li>Most goalie shutouts</li>
+            </ol>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 NHL Playoff Pool. All rights reserved.</p>
+    </footer>
+</body>
+</html> 

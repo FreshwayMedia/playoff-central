@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NHL Playoff Pool | Home</title>
+    <title>404 - Page Not Found | NHL Playoff Pool</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -14,6 +14,7 @@
             --light-text: #666;
             --background-color: #f5f5f5;
             --card-background: #ffffff;
+            --error-color: #d32f2f;
         }
 
         * {
@@ -30,70 +31,32 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
         }
 
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 1rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 100%;
-        }
-
-        nav {
+        .container {
             max-width: 1200px;
             margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 1.5rem;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--accent-color);
-        }
-
-        main {
+            padding: 2rem;
             flex: 1;
-            max-width: 1200px;
-            width: 100%;
-            margin: 2rem auto;
-            padding: 0 1rem;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
-        .welcome-section {
+        .error-content {
             background-color: var(--card-background);
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
+            max-width: 600px;
             width: 100%;
-            max-width: 800px;
-            text-align: center;
         }
 
         h1 {
-            color: var(--primary-color);
+            color: var(--error-color);
+            font-size: 3rem;
             margin-bottom: 1rem;
         }
 
@@ -102,7 +65,7 @@
             margin-bottom: 1.5rem;
         }
 
-        .cta-button {
+        .home-link {
             display: inline-block;
             padding: 0.75rem 1.5rem;
             background-color: var(--primary-color);
@@ -112,7 +75,7 @@
             transition: background-color 0.3s ease;
         }
 
-        .cta-button:hover {
+        .home-link:hover {
             background-color: var(--secondary-color);
         }
 
@@ -121,38 +84,17 @@
             padding: 1rem;
             background-color: var(--card-background);
             color: var(--light-text);
-            margin-top: auto;
-            width: 100%;
-        }
-
-        @media (max-width: 768px) {
-            .nav-links {
-                gap: 1rem;
-            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">NHL Playoff Pool</div>
-            <div class="nav-links">
-                <a href="/">Home</a>
-                <a href="/rules">Rules</a>
-                <a href="/standings">Standings</a>
-                <a href="/login">Login</a>
-            </div>
-        </nav>
-    </header>
-
-    <main>
-        <section class="welcome-section">
-            <h1>Welcome to NHL Playoff Pool</h1>
-            <p>Join the excitement of the NHL playoffs with our interactive pool! Create your team, make predictions, and compete with friends for the ultimate bragging rights.</p>
-            <a href="/login" class="cta-button">Get Started</a>
-        </section>
-    </main>
-
+    <div class="container">
+        <div class="error-content">
+            <h1>404</h1>
+            <p>Oops! The page you're looking for doesn't exist.</p>
+            <a href="/" class="home-link">Return to Home</a>
+        </div>
+    </div>
     <footer>
         <p>&copy; 2024 NHL Playoff Pool. All rights reserved.</p>
     </footer>
