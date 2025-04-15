@@ -12,6 +12,9 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
+// Import models
+const User = require('./models/User');
+
 const app = express();
 
 // Security Middleware
@@ -84,26 +87,46 @@ app.get('/health', (req, res) => {
 const connectDB = async () => {
   try {
     mongoose.set('debug', process.env.NODE_ENV === 'development');
+    
+    // Connect to MongoDB with simplified options
     await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 60000,
+      serverSelectionTimeoutMS: 30000,
       socketTimeoutMS: 45000,
-      connectTimeoutMS: 60000,
-      maxPoolSize: 50,
-      minPoolSize: 5,
-      maxIdleTimeMS: 30000,
-      ssl: true,
-      authSource: 'admin',
-      retryWrites: true,
-      w: 'majority'
+      connectTimeoutMS: 30000,
+      maxPoolSize: 10,
+      minPoolSize: 0
     });
+    
     console.log('Connected to MongoDB');
     
     // Test the connection
     await mongoose.connection.db.admin().ping();
     console.log('MongoDB connection is healthy');
-    
+
+    // Create indexes with consistent options
+    const collection = mongoose.connection.collection('users');
+    try {
+      // Drop existing index if it exists
+      await collection.dropIndex('email_1').catch(() => {});
+      
+      // Create new index with consistent options
+      await collection.createIndex(
+        { email: 1 },
+        { 
+          unique: true,
+          background: true,
+          name: 'email_1'
+        }
+      );
+      console.log('User indexes created successfully');
+    } catch (error) {
+      if (error.code !== 85) { // Ignore IndexOptionsConflict
+        console.error('Error creating indexes:', error);
+      }
+    }
+
     return true;
   } catch (err) {
     console.error('MongoDB connection error:', {

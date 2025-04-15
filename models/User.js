@@ -24,27 +24,8 @@ const userSchema = new mongoose.Schema({
         default: Date.now
     }
 }, {
-    // Add timestamps for better tracking
     timestamps: true,
-    // Ensure indexes are created
-    autoIndex: true,
-    // Disable buffering to prevent timeout issues
-    bufferCommands: false,
-    // Add collection name explicitly
-    collection: 'users',
-    // Add write concern for better reliability
-    writeConcern: {
-        w: 'majority',
-        j: true,
-        wtimeout: 30000
-    }
-});
-
-// Create indexes with a timeout
-userSchema.index({ email: 1 }, { 
-    unique: true,
-    background: true,
-    expireAfterSeconds: 0
+    autoIndex: false // Disable automatic index creation
 });
 
 // Hash password before saving
@@ -65,34 +46,6 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Add better error handling for duplicate key errors
-userSchema.post('save', function(error, doc, next) {
-    if (error.name === 'MongoServerError') {
-        if (error.code === 11000) {
-            next(new Error('Email already exists'));
-        } else if (error.code === 50) {
-            next(new Error('Database operation timeout'));
-        } else {
-            next(new Error(`Database error: ${error.message}`));
-        }
-    } else {
-        next(error);
-    }
-});
-
-// Create indexes with consistent options
-const createIndexes = async () => {
-    try {
-        await mongoose.model('User').createIndexes();
-    } catch (error) {
-        if (error.code !== 85) { // Ignore IndexOptionsConflict error
-            console.error('Error creating indexes:', error);
-        }
-    }
-};
-
-// Initialize indexes after model compilation
+// Create and export the model
 const User = mongoose.model('User', userSchema);
-createIndexes();
-
 module.exports = User; 
