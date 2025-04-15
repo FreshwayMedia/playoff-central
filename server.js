@@ -13,7 +13,7 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
 // Import models
-const { User } = require('./models');
+const User = require('./models/User');
 
 const app = express();
 
@@ -114,8 +114,16 @@ const connectDB = async () => {
 
     // Handle index creation
     try {
-      // Drop existing indexes to prevent conflicts
-      await User.collection.dropIndexes();
+      // Get existing indexes
+      const indexes = await User.collection.indexes();
+      
+      // Check if email index exists
+      const emailIndex = indexes.find(index => index.name === 'email_1');
+      
+      if (emailIndex) {
+        // Drop existing index
+        await User.collection.dropIndex('email_1');
+      }
       
       // Create new index with consistent options
       await User.collection.createIndex(
@@ -129,9 +137,8 @@ const connectDB = async () => {
       
       console.log('User indexes created successfully');
     } catch (error) {
-      if (error.code !== 85) { // Ignore IndexOptionsConflict
-        console.error('Error creating user indexes:', error);
-      }
+      console.error('Error creating user indexes:', error);
+      // Don't throw here, as the connection is still valid
     }
 
   } catch (error) {
@@ -142,109 +149,78 @@ const connectDB = async () => {
 
 // Start server
 const startServer = async () => {
-  // Connect to MongoDB first
-  const isConnected = await connectDB();
-  if (!isConnected) {
-    console.error('Failed to connect to MongoDB. Server will not start.');
-    process.exit(1);
-  }
-
-  // Import and use routes
-  const authRoutes = require('./routes/auth');
-  app.use('/api/auth', authRoutes);
-
-  // Error handling middleware
-  app.use((err, req, res, next) => {
-    console.error('Error details:', {
-      message: err.message,
-      path: req.path,
-      method: req.method,
-      ...(process.env.NODE_ENV === 'development' && { 
-        stack: err.stack,
-        body: req.body 
-      })
-    });
+  try {
+    await connectDB();
     
-    res.status(err.status || 500).json({
-      error: err.message || 'Internal Server Error',
-      ...(process.env.NODE_ENV === 'development' && { 
-        path: req.path,
-        timestamp: new Date().toISOString()
-      })
-    });
-  });
-
-  const PORT = process.env.NODE_ENV === 'production' ? process.env.PORT || 3000 : 3001;
-  const server = app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
-  });
-
-  // WebSocket setup with heartbeat
-  const wss = new WebSocket.Server({ server });
-
-  function heartbeat() {
-    this.isAlive = true;
-  }
-
-  wss.on('connection', (ws) => {
-    console.log('New WebSocket connection');
-    ws.isAlive = true;
-    ws.on('pong', heartbeat);
-
-    ws.on('message', (message) => {
-      try {
-        console.log('Received:', message);
-      } catch (error) {
-        console.error('WebSocket message error:', error);
-      }
+    const PORT = process.env.PORT || 3001;
+    const server = app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
     });
 
-    ws.on('error', (error) => {
-      console.error('WebSocket error:', error);
-    });
+    // WebSocket setup
+    const wss = new WebSocket.Server({ server });
 
-    ws.on('close', () => {
-      console.log('Client disconnected');
-    });
-  });
+    function heartbeat() {
+      this.isAlive = true;
+    }
 
-  // Ping clients every 30 seconds to check connection
-  const interval = setInterval(() => {
-    wss.clients.forEach((ws) => {
-      if (ws.isAlive === false) return ws.terminate();
-      ws.isAlive = false;
-      ws.ping();
-    });
-  }, 30000);
+    wss.on('connection', (ws) => {
+      console.log('New WebSocket connection');
+      ws.isAlive = true;
+      ws.on('pong', heartbeat);
 
-  // Graceful shutdown
-  const shutdown = () => {
-    console.log('Shutting down gracefully...');
-    clearInterval(interval);
-    server.close(() => {
-      console.log('Server closed');
-      mongoose.connection.close(false, () => {
-        console.log('MongoDB connection closed');
-        process.exit(0);
+      ws.on('message', (message) => {
+        try {
+          console.log('Received:', message);
+        } catch (error) {
+          console.error('WebSocket message error:', error);
+        }
+      });
+
+      ws.on('error', (error) => {
+        console.error('WebSocket error:', error);
+      });
+
+      ws.on('close', () => {
+        console.log('Client disconnected');
       });
     });
 
-    // Force shutdown after 10 seconds
-    setTimeout(() => {
-      console.error('Could not close connections in time, forcefully shutting down');
-      process.exit(1);
-    }, 10000);
-  };
+    // Ping clients every 30 seconds
+    const interval = setInterval(() => {
+      wss.clients.forEach((ws) => {
+        if (ws.isAlive === false) return ws.terminate();
+        ws.isAlive = false;
+        ws.ping();
+      });
+    }, 30000);
 
-  process.on('SIGTERM', shutdown);
-  process.on('SIGINT', shutdown);
+    // Graceful shutdown
+    const shutdown = () => {
+      console.log('Shutting down gracefully...');
+      clearInterval(interval);
+      server.close(() => {
+        console.log('Server closed');
+        mongoose.connection.close(false, () => {
+          console.log('MongoDB connection closed');
+          process.exit(0);
+        });
+      });
 
-  // Attach WebSocket server to HTTP server
-  server.on('upgrade', (request, socket, head) => {
-    wss.handleUpgrade(request, socket, head, (ws) => {
-      wss.emit('connection', ws, request);
-    });
-  });
+      // Force shutdown after 10 seconds
+      setTimeout(() => {
+        console.error('Could not close connections in time, forcefully shutting down');
+        process.exit(1);
+      }, 10000);
+    };
+
+    process.on('SIGTERM', shutdown);
+    process.on('SIGINT', shutdown);
+
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
 };
 
 startServer(); 
