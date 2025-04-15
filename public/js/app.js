@@ -31,21 +31,54 @@ let selectedPlayers = {
 };
 let liveGames = new Map();
 let playoffSeries = [];
+let isAuthenticated = false;
 
 // DOM Elements
+let loginModal, registerModal, playerSelectionModal, poolCreationModal;
+const loginBtn = document.getElementById('loginBtn');
+const registerBtn = document.getElementById('registerBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize Bootstrap components
-    const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-    const playerSelectionModal = new bootstrap.Modal(document.getElementById('playerSelectionModal'));
-    const poolCreationModal = new bootstrap.Modal(document.getElementById('poolCreationModal'));
+    loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+    playerSelectionModal = new bootstrap.Modal(document.getElementById('playerSelectionModal'));
+    poolCreationModal = new bootstrap.Modal(document.getElementById('poolCreationModal'));
+    registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
     
     // Add event listeners
-    document.getElementById('loginBtn').addEventListener('click', () => loginModal.show());
-    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    loginBtn.addEventListener('click', () => loginModal.show());
+    registerBtn.addEventListener('click', () => registerModal.show());
+    logoutBtn.addEventListener('click', handleLogout);
     document.getElementById('createPoolBtn').addEventListener('click', () => poolCreationModal.show());
     document.getElementById('selectPlayersBtn').addEventListener('click', () => {
         loadAvailablePlayers();
         playerSelectionModal.show();
+    });
+    
+    // Form submission listeners
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        await handleLogin(email, password);
+    });
+
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('registerName').value;
+        const email = document.getElementById('registerEmail').value;
+        const password = document.getElementById('registerPassword').value;
+        const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+        if (password !== confirmPassword) {
+            alert('Passwords do not match!');
+            return;
+        }
+
+        await handleRegister(name, email, password);
     });
     
     // Player selection event listeners
@@ -116,58 +149,86 @@ document.addEventListener('DOMContentLoaded', () => {
         mainContent.classList.add('d-none');
         devDashboard.classList.remove('d-none');
     }
+
+    // Initialize UI
+    updateAuthUI();
 });
 
 // Authentication Functions
-async function handleLogin(event) {
-    event.preventDefault();
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
+async function handleLogin(email, password) {
     try {
-        // Check for developer credentials
-        if (email === 'FWplayoffcentral25' && password === 'GOJetsGO') {
-            // Developer login successful
-            currentUser = {
-                email: email,
-                id: 'dev_admin',
-                name: 'Developer Admin',
-                isDeveloper: true
-            };
-            
-            // Hide welcome section and show developer dashboard
-            document.getElementById('welcomeSection').classList.add('d-none');
-            document.getElementById('dashboard').classList.add('d-none');
-            document.getElementById('devDashboard').classList.remove('d-none');
-            
-            // Store developer session
-            sessionStorage.setItem('devLoggedIn', 'true');
-            
-            // Close login modal
-            const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            currentUser = data.user;
+            isAuthenticated = true;
+            updateAuthUI();
             loginModal.hide();
+            loginForm.reset();
         } else {
-            // Regular user login
-            // TODO: Implement actual authentication
-            simulateSuccessfulLogin(email);
+            const error = await response.json();
+            alert(error.message || 'Login failed');
         }
     } catch (error) {
-        showError('Login failed. Please try again.');
+        console.error('Login error:', error);
+        alert('An error occurred during login');
     }
 }
 
-function simulateSuccessfulLogin(email) {
-    currentUser = {
-        email: email,
-        id: 'user123',
-        name: email.split('@')[0],
-        isDeveloper: false
-    };
-    
-    document.getElementById('welcomeSection').classList.add('d-none');
-    document.getElementById('dashboard').classList.remove('d-none');
-    document.getElementById('devDashboard').classList.add('d-none');
-    loadUserPools();
+async function handleRegister(name, email, password) {
+    try {
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, email, password })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            currentUser = data.user;
+            isAuthenticated = true;
+            updateAuthUI();
+            registerModal.hide();
+            registerForm.reset();
+        } else {
+            const error = await response.json();
+            alert(error.message || 'Registration failed');
+        }
+    } catch (error) {
+        console.error('Registration error:', error);
+        alert('An error occurred during registration');
+    }
+}
+
+function handleLogout() {
+    currentUser = null;
+    isAuthenticated = false;
+    updateAuthUI();
+}
+
+function updateAuthUI() {
+    if (isAuthenticated) {
+        loginBtn.style.display = 'none';
+        registerBtn.style.display = 'none';
+        logoutBtn.style.display = 'block';
+        document.getElementById('userName').textContent = currentUser.name;
+        document.getElementById('userDropdown').style.display = 'block';
+    } else {
+        loginBtn.style.display = 'block';
+        registerBtn.style.display = 'block';
+        logoutBtn.style.display = 'none';
+        document.getElementById('userName').textContent = '';
+        document.getElementById('userDropdown').style.display = 'none';
+    }
 }
 
 // Pool Management

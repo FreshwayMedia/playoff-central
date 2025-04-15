@@ -54,18 +54,37 @@ app.use(cors({
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public'))); // Serve from public directory
 
-// Add request logging
+// Add request logging with more details
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  console.log('Request Headers:', req.headers);
+  console.log('Request Body:', req.body);
   next();
+});
+
+// Import routes
+const authRoutes = require('./routes/auth');
+
+// Use routes with error handling
+app.use('/api/auth', (req, res, next) => {
+  console.log('Auth route accessed:', req.path);
+  authRoutes(req, res, next);
 });
 
 // Error handling middleware with more details
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({
-    error: 'Internal Server Error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+  console.error('Error details:', {
+    message: err.message,
+    stack: err.stack,
+    path: req.path,
+    method: req.method,
+    body: req.body
+  });
+  
+  res.status(err.status || 500).json({
+    error: err.message || 'Internal Server Error',
+    path: req.path,
+    timestamp: new Date().toISOString()
   });
 });
 
