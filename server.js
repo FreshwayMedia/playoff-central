@@ -66,10 +66,7 @@ app.use((req, res, next) => {
 const authRoutes = require('./routes/auth');
 
 // Use routes with error handling
-app.use('/api/auth', (req, res, next) => {
-  console.log('Auth route accessed:', req.path);
-  authRoutes(req, res, next);
-});
+app.use('/api/auth', authRoutes);
 
 // Error handling middleware with more details
 app.use((err, req, res, next) => {
