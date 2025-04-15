@@ -66,6 +66,14 @@ $registerBody = @{
 
 $registerResponse = Invoke-APIRequest -Method "POST" -Endpoint "/api/auth/register" -Body $registerBody -Description "Testing registration"
 
+# Verify registration was successful
+if ($registerResponse -and $registerResponse.user) {
+    Write-Host "Registration successful. User ID: $($registerResponse.user._id)"
+} else {
+    Write-Host "Registration failed"
+    exit 1
+}
+
 # Test login with correct credentials
 $loginBody = @{
     email = "test@example.com"
@@ -74,10 +82,28 @@ $loginBody = @{
 
 $loginResponse = Invoke-APIRequest -Method "POST" -Endpoint "/api/auth/login" -Body $loginBody -Description "Testing login with correct credentials"
 
+# Verify login was successful
+if ($loginResponse -and $loginResponse.token) {
+    Write-Host "Login successful. Token received."
+    # Store the token for future requests
+    $headers["Authorization"] = "Bearer $($loginResponse.token)"
+} else {
+    Write-Host "Login failed"
+    exit 1
+}
+
 # Test login with incorrect password
 $wrongLoginBody = @{
     email = "test@example.com"
     password = "wrongpassword"
 }
 
-$wrongLoginResponse = Invoke-APIRequest -Method "POST" -Endpoint "/api/auth/login" -Body $wrongLoginBody -Description "Testing login with incorrect password" 
+$wrongLoginResponse = Invoke-APIRequest -Method "POST" -Endpoint "/api/auth/login" -Body $wrongLoginBody -Description "Testing login with incorrect password"
+
+# Verify incorrect login failed as expected
+if ($null -eq $wrongLoginResponse) {
+    Write-Host "Incorrect login test passed - login was rejected as expected"
+} else {
+    Write-Host "Incorrect login test failed - login was unexpectedly successful"
+    exit 1
+} 
