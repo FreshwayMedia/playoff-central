@@ -3,569 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NHL Playoff Pool Manager</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <title>NHL Playoff Pool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #FFB81C;
+            --background-color: #F5F5F5;
+            --text-color: #333333;
+            --error-color: #DC3545;
+            --success-color: #28A745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 2rem;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: var(--secondary-color);
+        }
+
+        .main-content {
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #002244;
+        }
+
+        .error {
+            color: var(--error-color);
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .success {
+            color: var(--success-color);
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 0;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav ul {
+                margin-top: 1rem;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin: 0 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Background Image Container -->
-    <div class="background-container">
-        <div class="background-overlay"></div>
-    </div>
-
-    <!-- NHL Logo -->
-    <div class="nhl-logo-container">
-        <img src="https://www-league.nhlstatic.com/images/logos/league-dark/133.svg" alt="NHL Logo" class="nhl-logo">
-    </div>
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <div class="brand-logo">
-                    <svg width="40" height="40" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Outer Circle (Faceoff Circle) -->
-                        <circle cx="60" cy="60" r="58" stroke="#e74c3c" stroke-width="4"/>
-                        
-                        <!-- Hashmarks -->
-                        <!-- Top -->
-                        <line x1="48" y1="2" x2="48" y2="12" stroke="#e74c3c" stroke-width="2"/>
-                        <line x1="72" y1="2" x2="72" y2="12" stroke="#e74c3c" stroke-width="2"/>
-                        <!-- Bottom -->
-                        <line x1="48" y1="108" x2="48" y2="118" stroke="#e74c3c" stroke-width="2"/>
-                        <line x1="72" y1="108" x2="72" y2="118" stroke="#e74c3c" stroke-width="2"/>
-                        <!-- Left -->
-                        <line x1="2" y1="48" x2="12" y2="48" stroke="#e74c3c" stroke-width="2"/>
-                        <line x1="2" y1="72" x2="12" y2="72" stroke="#e74c3c" stroke-width="2"/>
-                        <!-- Right -->
-                        <line x1="108" y1="48" x2="118" y2="48" stroke="#e74c3c" stroke-width="2"/>
-                        <line x1="108" y1="72" x2="118" y2="72" stroke="#e74c3c" stroke-width="2"/>
-                        
-                        <!-- Letters PC -->
-                        <text x="60" y="65" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="40" fill="#ffffff">PC</text>
-                        
-                        <!-- Hockey Puck -->
-                        <circle cx="60" cy="85" r="10" fill="#2c3e50"/> <!-- Single color puck -->
-                        
-                        <!-- Stars (repositioned) -->
-                        <path d="M40 85L42 89L46 90L42 93L42 97L40 94L38 97L38 93L34 90L38 89L40 85Z" fill="#e74c3c"/>
-                        <path d="M80 85L82 89L86 90L82 93L82 97L80 94L78 97L78 93L74 90L78 89L80 85Z" fill="#e74c3c"/>
-                    </svg>
-                </div>
-                <div class="brand-text ms-2">
-                    <span class="brand-title">Playoff Central</span>
-                    <span class="brand-subtitle">NHL Pool Manager</span>
-                </div>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" id="loginBtn">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" id="registerBtn">Register</a>
-                    </li>
+    <header>
+        <div class="container header-content">
+            <div class="logo">NHL Playoff Pool</div>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/rules">Rules</a></li>
+                    <li><a href="/standings">Standings</a></li>
+                    <li><a href="/login">Login</a></li>
                 </ul>
-            </div>
+            </nav>
         </div>
-    </nav>
+    </header>
 
-    <main class="container mt-4">
-        <!-- Center Content Section -->
-        <div class="center-content">
-            <!-- Welcome Section with Centered Buttons -->
-            <div id="welcomeSection" class="text-center welcome-container">
-                <!-- Large Centered Logo -->
-                <div class="main-logo mb-5">
-                    <svg width="200" height="200" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Outer Circle (Faceoff Circle) -->
-                        <circle cx="60" cy="60" r="58" stroke="#e74c3c" stroke-width="4"/>
-                        
-                        <!-- Hashmarks -->
-                        <!-- Top -->
-                        <line x1="48" y1="2" x2="48" y2="12" stroke="#e74c3c" stroke-width="2"/>
-                        <line x1="72" y1="2" x2="72" y2="12" stroke="#e74c3c" stroke-width="2"/>
-                        <!-- Bottom -->
-                        <line x1="48" y1="108" x2="48" y2="118" stroke="#e74c3c" stroke-width="2"/>
-                        <line x1="72" y1="108" x2="72" y2="118" stroke="#e74c3c" stroke-width="2"/>
-                        <!-- Left -->
-                        <line x1="2" y1="48" x2="12" y2="48" stroke="#e74c3c" stroke-width="2"/>
-                        <line x1="2" y1="72" x2="12" y2="72" stroke="#e74c3c" stroke-width="2"/>
-                        <!-- Right -->
-                        <line x1="108" y1="48" x2="118" y2="48" stroke="#e74c3c" stroke-width="2"/>
-                        <line x1="108" y1="72" x2="118" y2="72" stroke="#e74c3c" stroke-width="2"/>
-                        
-                        <!-- Letters PC -->
-                        <text x="60" y="65" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="40" fill="#2c3e50" filter="url(#shadow)">PC</text>
-                        
-                        <!-- Hockey Puck -->
-                        <circle cx="60" cy="85" r="10" fill="#2c3e50" filter="url(#shadow)"/> <!-- Single color puck -->
-                        
-                        <!-- Stars (repositioned) -->
-                        <path d="M40 85L42 89L46 90L42 93L42 97L40 94L38 97L38 93L34 90L38 89L40 85Z" fill="#e74c3c"/>
-                        <path d="M80 85L82 89L86 90L82 93L82 97L80 94L78 97L78 93L74 90L78 89L80 85Z" fill="#e74c3c"/>
-                        
-                        <!-- Filters -->
-                        <defs>
-                            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                                <feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.3"/>
-                            </filter>
-                        </defs>
-                    </svg>
-                </div>
-
-                <h1>Welcome to Playoff Central</h1>
-                <p class="lead mb-5">Create or join a playoff pool, draft your team, and track live NHL playoff statistics!</p>
-                
-                <div class="auth-buttons mb-5">
-                    <button class="puck-button" id="loginBtn">
-                        Login
-                    </button>
-                    <button class="puck-button register" id="registerBtn">
-                        Register
-                    </button>
-                </div>
-
-                <!-- Live Scores and Playoffs Display -->
-                <div class="scores-display-container">
-                    <div class="scores-banner">
-                        <h2 class="scores-title">LIVE SCORES</h2>
-                        <div class="scores-banner-content">
-                            <div class="banner-scores-wrapper">
-                                <!-- Example live games (will be dynamic) -->
-                                <div class="banner-score-item">
-                                    <div class="game-info">
-                                        <div class="team-info home">
-                                            <img src="https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/52.svg" class="team-logo" alt="WPG">
-                                            <span class="team-name">WPG</span>
-                                            <span class="score">4</span>
-                                        </div>
-                                        <div class="game-status">
-                                            <span class="period">3rd</span>
-                                            <span class="time">12:45</span>
-                                        </div>
-                                        <div class="team-info away">
-                                            <img src="https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/53.svg" class="team-logo" alt="ARI">
-                                            <span class="team-name">ARI</span>
-                                            <span class="score">2</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="banner-score-item">
-                                    <div class="game-info">
-                                        <div class="team-info home">
-                                            <img src="https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/10.svg" class="team-logo" alt="TOR">
-                                            <span class="team-name">TOR</span>
-                                            <span class="score">3</span>
-                                        </div>
-                                        <div class="game-status">
-                                            <span class="period">2nd</span>
-                                            <span class="time">8:30</span>
-                                        </div>
-                                        <div class="team-info away">
-                                            <img src="https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/6.svg" class="team-logo" alt="BOS">
-                                            <span class="team-name">BOS</span>
-                                            <span class="score">3</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="banner-score-item">
-                                    <div class="game-info">
-                                        <div class="team-info home">
-                                            <img src="https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/55.svg" class="team-logo" alt="SEA">
-                                            <span class="team-name">SEA</span>
-                                            <span class="score">1</span>
-                                        </div>
-                                        <div class="game-status">
-                                            <span class="period">1st</span>
-                                            <span class="time">15:22</span>
-                                        </div>
-                                        <div class="team-info away">
-                                            <img src="https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/54.svg" class="team-logo" alt="VGK">
-                                            <span class="team-name">VGK</span>
-                                            <span class="score">2</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="banner-score-item upcoming">
-                                    <div class="game-info">
-                                        <div class="team-info home">
-                                            <img src="https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/26.svg" class="team-logo" alt="LAK">
-                                            <span class="team-name">LAK</span>
-                                            <span class="score">-</span>
-                                        </div>
-                                        <div class="game-status">
-                                            <span class="start-time">10:30 PM ET</span>
-                                        </div>
-                                        <div class="team-info away">
-                                            <img src="https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/22.svg" class="team-logo" alt="EDM">
-                                            <span class="team-name">EDM</span>
-                                            <span class="score">-</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <main class="container">
+        <div class="main-content">
+            <div class="card">
+                <h1>Welcome to NHL Playoff Pool</h1>
+                <p>Join the excitement of the NHL playoffs with our interactive pool!</p>
             </div>
-        </div>
 
-        <!-- Dashboard (Hidden until logged in) -->
-        <div id="dashboard" class="d-none">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>Live NHL Playoff Games</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="liveScores" class="live-scores-container">
-                                <!-- Live scores will be dynamically added here -->
-                            </div>
-                        </div>
+            <div class="card">
+                <h2>Login</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>My Pools</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="poolsList">
-                                <!-- Pools will be dynamically added here -->
-                            </div>
-                            <button class="btn btn-primary mt-3" id="createPoolBtn">Create New Pool</button>
-                        </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
                     </div>
-                </div>
-                <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5>Live Standings</h5>
-                            <button class="btn btn-success" id="selectPlayersBtn">Select Players</button>
-                        </div>
-                        <div class="card-body">
-                            <div id="standings">
-                                <!-- Standings will be dynamically added here -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Login Modal -->
-        <div class="modal fade" id="loginModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Login</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="loginForm">
-                            <div class="mb-3">
-                                <label for="loginEmail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="loginEmail" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="loginPassword" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="loginPassword" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Login</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Registration Modal -->
-        <div class="modal fade" id="registerModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Register</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="registerForm">
-                            <div class="mb-3">
-                                <label for="registerName" class="form-label">Name</label>
-                                <input type="text" class="form-control" id="registerName" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="registerEmail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="registerEmail" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="registerPassword" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="registerPassword" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="registerConfirmPassword" class="form-label">Confirm Password</label>
-                                <input type="password" class="form-control" id="registerConfirmPassword" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Register</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Player Selection Modal -->
-        <div class="modal fade" id="playerSelectionModal" tabindex="-1">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Select Your Players</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row mb-3">
-                            <div class="col">
-                                <input type="text" class="form-control" id="playerSearch" placeholder="Search players...">
-                            </div>
-                            <div class="col-auto">
-                                <select class="form-select" id="positionFilter">
-                                    <option value="all">All Positions</option>
-                                    <option value="forward">Forwards</option>
-                                    <option value="defenseman">Defensemen</option>
-                                    <option value="goalie">Goalies</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div id="availablePlayers" class="player-list">
-                                    <!-- Available players will be loaded here -->
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="selected-players-section">
-                                    <h6>Your Team</h6>
-                                    <div id="selectedPlayers" class="player-list selected">
-                                        <!-- Selected players will appear here -->
-                                    </div>
-                                    <div class="mt-3">
-                                        <small class="text-muted">
-                                            Forwards: <span id="forwardCount">0</span>/6<br>
-                                            Defensemen: <span id="defenseCount">0</span>/4<br>
-                                            Goalies: <span id="goalieCount">0</span>/2
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="saveTeamBtn">Save Team</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pool Creation Modal -->
-        <div class="modal fade" id="poolCreationModal" tabindex="-1">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Create New Playoff Pool</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="poolCreationForm">
-                            <!-- Basic Pool Info -->
-                            <div class="mb-4">
-                                <h6 class="mb-3">Pool Details</h6>
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label for="poolName" class="form-label">Pool Name</label>
-                                        <input type="text" class="form-control" id="poolName" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="maxMembers" class="form-label">Maximum Members</label>
-                                        <input type="number" class="form-control" id="maxMembers" min="2" max="50" value="12">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Roster Settings -->
-                            <div class="mb-4">
-                                <h6 class="mb-3">Roster Requirements</h6>
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label class="form-label">Forwards</label>
-                                        <input type="number" class="form-control" id="rosterForwards" value="6" readonly>
-                                        <small class="text-muted">Fixed at 6 forwards</small>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Defensemen</label>
-                                        <input type="number" class="form-control" id="rosterDefensemen" value="4" readonly>
-                                        <small class="text-muted">Fixed at 4 defensemen</small>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Goalies</label>
-                                        <input type="number" class="form-control" id="rosterGoalies" value="1" readonly>
-                                        <small class="text-muted">Fixed at 1 goalie</small>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Scoring Settings -->
-                            <div class="mb-4">
-                                <h6 class="mb-3">Scoring Settings</h6>
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label class="form-label">Goals</label>
-                                        <input type="number" class="form-control" id="goalPoints" value="1" readonly>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Assists</label>
-                                        <input type="number" class="form-control" id="assistPoints" value="1" readonly>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Hits</label>
-                                        <input type="number" class="form-control" id="hitPoints" value="0.20" readonly>
-                                    </div>
-                                </div>
-                                <div class="row g-3 mt-2">
-                                    <div class="col-md-4">
-                                        <label class="form-label">Blocked Shots</label>
-                                        <input type="number" class="form-control" id="blockPoints" value="0.20" readonly>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Goalie Wins</label>
-                                        <input type="number" class="form-control" id="goalieWinPoints" value="2" readonly>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Goalie Saves</label>
-                                        <input type="number" class="form-control" id="goalieSavePoints" value="0.03" readonly>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Draft Settings -->
-                            <div class="mb-4">
-                                <h6 class="mb-3">Draft Settings</h6>
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label for="draftType" class="form-label">Draft Type</label>
-                                        <select class="form-select" id="draftType">
-                                            <option value="manual">Manual Selection</option>
-                                            <option value="snake">Snake Draft</option>
-                                            <option value="auction">Auction Draft</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="draftDate" class="form-label">Draft Date (optional)</label>
-                                        <input type="datetime-local" class="form-control" id="draftDate">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Invite Members -->
-                            <div class="mb-4">
-                                <h6 class="mb-3">Invite Members</h6>
-                                <div class="row g-3">
-                                    <div class="col-12">
-                                        <label for="inviteEmails" class="form-label">Email Addresses (one per line)</label>
-                                        <textarea class="form-control" id="inviteEmails" rows="3" placeholder="Enter email addresses..."></textarea>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Additional Settings -->
-                            <div class="mb-4">
-                                <h6 class="mb-3">Additional Settings</h6>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="allowTrading">
-                                    <label class="form-check-label" for="allowTrading">
-                                        Allow Trading Between Members
-                                    </label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="publicPool">
-                                    <label class="form-check-label" for="publicPool">
-                                        Make Pool Public
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="autoPickEnabled">
-                                    <label class="form-check-label" for="autoPickEnabled">
-                                        Enable Auto-Pick for Absent Members
-                                    </label>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="createPoolBtn">Create Pool</button>
-                    </div>
-                </div>
+                    <button type="submit">Login</button>
+                </form>
             </div>
         </div>
     </main>
 
-    <!-- Developer Dashboard (Hidden until dev login) -->
-    <div id="devDashboard" class="d-none">
-        <div class="row">
-            <div class="col-12">
-                <div class="card bg-dark text-white">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5>Developer Console</h5>
-                        <button class="btn btn-outline-danger btn-sm" id="devLogoutBtn">Exit Developer Mode</button>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="card bg-secondary">
-                                    <div class="card-header">Score Management</div>
-                                    <div class="card-body">
-                                        <button class="btn btn-light mb-2 w-100">Update Live Scores</button>
-                                        <button class="btn btn-light mb-2 w-100">Modify Game Results</button>
-                                        <button class="btn btn-light w-100">Reset Game Status</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card bg-secondary">
-                                    <div class="card-header">Team Management</div>
-                                    <div class="card-body">
-                                        <button class="btn btn-light mb-2 w-100">Edit Team Data</button>
-                                        <button class="btn btn-light mb-2 w-100">Update Rosters</button>
-                                        <button class="btn btn-light w-100">Manage Trades</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card bg-secondary">
-                                    <div class="card-header">League Overview</div>
-                                    <div class="card-body">
-                                        <button class="btn btn-light mb-2 w-100">View All Leagues</button>
-                                        <button class="btn btn-light mb-2 w-100">User Management</button>
-                                        <button class="btn btn-light w-100">System Logs</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 NHL Playoff Pool. All rights reserved.</p>
         </div>
-    </div>
+    </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/app.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.ok) {
+                    window.location.href = '/dashboard';
+                } else {
+                    const error = await response.json();
+                    alert(error.message || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during login');
+            }
+        });
+    </script>
 </body>
 </html> 

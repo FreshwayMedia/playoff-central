@@ -13,7 +13,7 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
 // Import models
-const User = require('./models/User');
+const { User } = require('./models');
 
 const app = express();
 
@@ -98,44 +98,45 @@ const connectDB = async () => {
       maxPoolSize: 10,
       minPoolSize: 0
     });
-    
-    console.log('Connected to MongoDB');
-    
-    // Test the connection
-    await mongoose.connection.db.admin().ping();
-    console.log('MongoDB connection is healthy');
 
-    // Create indexes with consistent options
-    const collection = mongoose.connection.collection('users');
+    console.log('Connected to MongoDB');
+
+    // Verify connection
+    const db = mongoose.connection;
+    const adminDb = db.db.admin();
+    const pingResult = await adminDb.ping();
+    
+    if (pingResult.ok === 1) {
+      console.log('MongoDB connection is healthy');
+    } else {
+      throw new Error('MongoDB ping failed');
+    }
+
+    // Handle index creation
     try {
-      // Drop existing index if it exists
-      await collection.dropIndex('email_1').catch(() => {});
+      // Drop existing indexes to prevent conflicts
+      await User.collection.dropIndexes();
       
       // Create new index with consistent options
-      await collection.createIndex(
+      await User.collection.createIndex(
         { email: 1 },
-        { 
+        {
           unique: true,
           background: true,
           name: 'email_1'
         }
       );
+      
       console.log('User indexes created successfully');
     } catch (error) {
       if (error.code !== 85) { // Ignore IndexOptionsConflict
-        console.error('Error creating indexes:', error);
+        console.error('Error creating user indexes:', error);
       }
     }
 
-    return true;
-  } catch (err) {
-    console.error('MongoDB connection error:', {
-      name: err.name,
-      message: err.message,
-      code: err.code,
-      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-    });
-    return false;
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw error;
   }
 };
 
